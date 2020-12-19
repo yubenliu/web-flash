@@ -7,6 +7,20 @@ export function getList() {
   })
 }
 
+export function getMenuTree() {
+  return request({
+    url: '/menu/tree',
+    method: 'get'
+  })
+}
+export function listForRouter(params) {
+  return request({
+    url: '/menu/listForRouter',
+    method: 'get',
+    params
+  })
+}
+
 export function save(params) {
   return request({
     url: '/menu',

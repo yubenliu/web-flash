@@ -2,12 +2,10 @@ package cn.enilu.flash.api.controller;
 
 
 import cn.enilu.flash.api.utils.ApiConstants;
-import cn.enilu.flash.bean.vo.SpringContextHolder;
-import cn.enilu.flash.dao.cache.TokenCache;
-import cn.enilu.flash.utils.HttpKit;
-import cn.enilu.flash.utils.StringUtils;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import cn.enilu.flash.security.JwtUtil;
+import cn.enilu.flash.utils.HttpUtil;
+import cn.enilu.flash.utils.JsonUtil;
+import cn.enilu.flash.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +33,7 @@ public class BaseController {
     public Long getIdUser(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
 
-        Long idUser = SpringContextHolder.getBean(TokenCache.class).get(token);
+        Long idUser = JwtUtil.getUserId(token);
         if (idUser == null) {
             throw new RuntimeException("用户不存在");
         }
@@ -53,7 +51,7 @@ public class BaseController {
     }
 
     public String getToken() {
-        return HttpKit.getRequest().getHeader("Authorization");
+        return HttpUtil.getRequest().getHeader("Authorization");
     }
 
     /**
@@ -75,7 +73,7 @@ public class BaseController {
             ip = req.getRemoteAddr();
         }
         if (ip == null || ip.length() == 0 || ApiConstants.IPV6_LOCALHOST.equals(ip)) {
-            ip =ApiConstants.IPV4_LOCALHOST;
+            ip = ApiConstants.IPV4_LOCALHOST;
         }
         return ip;
     }
@@ -88,7 +86,7 @@ public class BaseController {
      */
     public String getjsonReq() {
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(HttpKit.getRequest().getInputStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(HttpUtil.getRequest().getInputStream()));
             String line = null;
             StringBuilder sb = new StringBuilder();
             while ((line = br.readLine()) != null) {
@@ -115,11 +113,10 @@ public class BaseController {
 
     public <T> T getFromJson(Class<T> klass) {
         String jsonStr = getjsonReq();
-        if (StringUtils.isEmpty(jsonStr)) {
+        if (StringUtil.isEmpty(jsonStr)) {
             return null;
         }
-        JSONObject json = JSONObject.parseObject(jsonStr);
-        return JSON.toJavaObject(json, klass);
+        return JsonUtil.fromJson(klass, jsonStr);
     }
 
 

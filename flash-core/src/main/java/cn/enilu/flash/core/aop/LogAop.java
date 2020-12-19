@@ -1,15 +1,13 @@
 package cn.enilu.flash.core.aop;
 
 import cn.enilu.flash.bean.core.BussinessLog;
-import cn.enilu.flash.bean.dictmap.base.AbstractDictMap;
-import cn.enilu.flash.bean.vo.SpringContextHolder;
-import cn.enilu.flash.dao.cache.TokenCache;
-import cn.enilu.flash.core.factory.Contrast;
 import cn.enilu.flash.core.log.LogManager;
 import cn.enilu.flash.core.log.LogTaskFactory;
+import cn.enilu.flash.security.JwtUtil;
 import cn.enilu.flash.service.system.LogObjectHolder;
-import cn.enilu.flash.utils.HttpKit;
-import cn.enilu.flash.utils.StringUtils;
+import cn.enilu.flash.utils.BeanUtil;
+import cn.enilu.flash.utils.HttpUtil;
+import cn.enilu.flash.utils.StringUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -70,19 +68,13 @@ public class LogAop {
 
         //获取用户id，admin和api模块获取idUser方式不同
         Long idUser = null;
-        HttpServletRequest request = HttpKit.getRequest();
+        HttpServletRequest request = HttpUtil.getRequest();
         String token = request.getHeader("Authorization");
-        if(StringUtils.isNotEmpty(token)) {
-            idUser = SpringContextHolder.getBean(TokenCache.class).get(token);
+        if (StringUtil.isNotEmpty(token)) {
+            idUser = JwtUtil.getUserId(token);
         }
-        if(idUser==null) {
-            return ;
-            //如果当前用户未登录，不做日志
-//            ShiroUser user = ShiroKit.getUser();
-//            if (null == user) {
-//                return;
-//            }
-//            idUser = user.getId();
+        if (idUser == null) {
+            return;
         }
 
         //获取拦截方法的参数
@@ -93,7 +85,6 @@ public class LogAop {
         BussinessLog annotation = currentMethod.getAnnotation(BussinessLog.class);
         String bussinessName = annotation.value();
         String key = annotation.key();
-        Class dictClass = annotation.dict();
 
         StringBuilder sb = new StringBuilder();
         for (Object param : params) {
@@ -102,20 +93,18 @@ public class LogAop {
         }
 
         //如果涉及到修改,比对变化
-        String msg="";
+        String msg = "";
         if (bussinessName.indexOf("修改") != -1 || bussinessName.indexOf("编辑") != -1) {
-            //todo api模块无法使用该方法获取数据
             Object obj1 = LogObjectHolder.me().get();
-            Map<String, String> obj2 = HttpKit.getRequestParameters();
+            Map<String, String> obj2 = HttpUtil.getRequestParameters();
             try {
-                msg = Contrast.contrastObj(dictClass, key, obj1, obj2);
-            }catch (Exception e){
+                msg = BeanUtil.contrastObj(key, obj1, obj2);
+            } catch (Exception e) {
 
             }
         } else {
-            Map<String, String> parameters = HttpKit.getRequestParameters();
-            AbstractDictMap dictMap = (AbstractDictMap) dictClass.newInstance();
-            msg = Contrast.parseMutiKey(dictMap,key,parameters);
+            Map<String, String> parameters = HttpUtil.getRequestParameters();
+            msg = BeanUtil.parseMutiKey(parameters);
         }
 
         LogManager.me().executeLog(LogTaskFactory.bussinessLog(idUser, bussinessName, className, methodName, msg));

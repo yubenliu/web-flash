@@ -6,13 +6,10 @@ import router from '../router/router'
 import store from '../store/store'
 import * as types from '../store/types'
 
-// const imgBaseUrl='http://htwx.xinshucredit.com/api'
-const imgBaseUrl = env.IMG_URL
-
 // axios 配置
 axios.defaults.timeout = 60000
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
-axios.defaults.baseURL = ''
+axios.defaults.baseURL = env.BASE_API
 
 // POST传参序列化
 axios.interceptors.request.use((config) => {
@@ -91,28 +88,27 @@ export function get (url, params) {
 
 export default {
 
-  imgBaseUrl,
   getOffcialSite () {
-    return get('/api/offcialSite')
+    return get('/offcialsite')
   },
   getProductList () {
-    return get('/api/offcialSite/product')
+    return get('/offcialsite/product')
   },
 
   getSolutionList () {
-    return get('/api/offcialSite/solution')
+    return get('/offcialsite/solution')
   },
 
   getCaseList () {
-    return get('/api/offcialSite/case')
+    return get('/offcialsite/case')
   },
   getNewsList () {
-    return get('/api/offcialSite/news')
+    return get('/offcialsite/news')
   },
   getArticle (id, type) {
-    return get('/api/offcialSite/article?id=' + id + '&type=' + type)
+    return get('/offcialsite/article?id=' + id + '&type=' + type)
   },
   saveContact (params) {
-    return post('/api/offcialSite/contact', params)
+    return post('/offcialsite/contact', params)
   }
 }

@@ -1,6 +1,8 @@
 import { remove, getList, save } from '@/api/message/sender'
+import permission from '@/directive/permission/index.js'
 
 export default {
+  directives: { permission },
   data() {
     return {
       formVisible: false,
@@ -14,7 +16,8 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        id: undefined
+        name:undefined,
+        className:undefined
       },
       total: 0,
       list: null,
@@ -30,18 +33,6 @@ export default {
         deleted: 'danger'
       }
       return statusMap[status]
-    }
-  },
-  computed: {
-
-    //表单验证
-    rules() {
-      return {
-        // cfgName: [
-        //   { required: true, message: this.$t('config.name') + this.$t('common.isRequired'), trigger: 'blur' },
-        //   { min: 3, max: 2000, message: this.$t('config.name') + this.$t('config.lengthValidation'), trigger: 'blur' }
-        // ]
-      }
     }
   },
   created() {
@@ -60,10 +51,14 @@ export default {
       })
     },
     search() {
+      this.listQuery.page = 1
       this.fetchData()
     },
     reset() {
       this.listQuery.id = ''
+      this.listQuery.page = 1
+      this.listQuery.name=''
+      this.listQuery.className=''
       this.fetchData()
     },
     handleFilter() {
@@ -109,8 +104,8 @@ export default {
       this.$refs['form'].validate((valid) => {
         if (valid) {
           save({
-      name:this.form.name,
-      className:this.form.className,
+            name:this.form.name,
+            className:this.form.className,
             id: this.form.id
           }).then(response => {
             this.$message({
@@ -135,6 +130,10 @@ export default {
       })
       return false
     },
+    editItem(record){
+      this.selRow= Object.assign({},record);
+      this.edit()
+    },
     edit() {
       if (this.checkSel()) {
         this.isAdd = false
@@ -142,6 +141,10 @@ export default {
         this.formTitle = '编辑消息发送者'
         this.formVisible = true
       }
+    },
+    removeItem(record){
+      this.selRow = record
+      this.remove()
     },
     remove() {
       if (this.checkSel()) {

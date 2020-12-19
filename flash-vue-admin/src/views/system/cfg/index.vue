@@ -2,24 +2,24 @@
   <div class="app-container">
     <div class="block">
       <el-row  :gutter="20">
-        <el-col :span="6">
-          <el-input v-model="listQuery.cfgName" :placeholder="$t('config.name')"></el-input>
+        <el-col :span="4">
+          <el-input v-model="listQuery.cfgName" size="mini" :placeholder="$t('config.name')"></el-input>
+        </el-col>
+        <el-col :span="4">
+          <el-input v-model="listQuery.cfgValue" size="mini"  :placeholder="$t('config.value')"></el-input>
         </el-col>
         <el-col :span="6">
-          <el-input v-model="listQuery.cfgValue"  :placeholder="$t('config.value')"></el-input>
-        </el-col>
-        <el-col :span="6">
-          <el-button type="success" icon="el-icon-search" @click.native="search">{{ $t('button.search') }}</el-button>
-          <el-button type="primary" icon="el-icon-refresh" @click.native="reset">{{ $t('button.reset') }}</el-button>
+          <el-button type="success" size="mini" icon="el-icon-search" @click.native="search">{{ $t('button.search') }}</el-button>
+          <el-button type="primary" size="mini" icon="el-icon-refresh" @click.native="reset">{{ $t('button.reset') }}</el-button>
         </el-col>
       </el-row>
       <br>
       <el-row>
         <el-col :span="24">
-          <el-button type="success" icon="el-icon-plus" @click.native="add">{{ $t('button.add') }}</el-button>
-          <el-button type="primary" icon="el-icon-edit" @click.native="edit">{{ $t('button.edit') }}</el-button>
-          <el-button type="danger" icon="el-icon-delete" @click.native="remove">{{ $t('button.delete') }}</el-button>
-          <el-button type="info" icon="el-icon-document" @click.native="exportXls">{{ $t('button.export') }}</el-button>
+          <el-button type="success" size="mini" icon="el-icon-plus" @click.native="add" v-permission="['/cfg/add']">{{ $t('button.add') }}</el-button>
+          <el-button type="primary" size="mini" icon="el-icon-edit" @click.native="edit" v-permission="['/cfg/update']">{{ $t('button.edit') }}</el-button>
+          <el-button type="danger" size="mini" icon="el-icon-delete" @click.native="remove" v-permission="['/cfg/delete']">{{ $t('button.delete') }}</el-button>
+          <el-button type="info" size="mini" icon="el-icon-document" @click.native="exportXls">{{ $t('button.export') }}</el-button>
         </el-col>
       </el-row>
     </div>
@@ -48,6 +48,12 @@
           {{scope.row.cfgDesc}}
         </template>
       </el-table-column>
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button type="text" size="mini" icon="el-icon-edit" @click.native="editItem(scope.row)" v-permission="['/cfg/update']">{{ $t('button.edit') }}</el-button>
+          <el-button type="text" size="mini" icon="el-icon-delete" @click.native="removeItem(scope.row)" v-permission="['/cfg/delete']">{{ $t('button.delete') }}</el-button>
+        </template>
+      </el-table-column>
 
     </el-table>
 
@@ -57,6 +63,7 @@
       :page-sizes="[10, 20, 50, 100,500]"
       :page-size="listQuery.limit"
       :total="total"
+      :current-page.sync="listQuery.page"
       @size-change="changeSize"
       @current-change="fetchPage"
       @prev-click="fetchPrev"
@@ -67,7 +74,7 @@
       :title="formTitle"
       :visible.sync="formVisible"
       width="70%">
-      <el-form ref="form" :model="form" :rules="rules" label-width="150px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
           <el-col :span="12">
             <el-form-item :label="$t('config.name')" prop="cfgName">

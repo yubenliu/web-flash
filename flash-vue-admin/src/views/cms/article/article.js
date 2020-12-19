@@ -1,8 +1,9 @@
 import { remove, getList, save } from '@/api/cms/article'
-
 import { getApiUrl } from '@/utils/utils'
+import permission from '@/directive/permission/index.js'
 
 export default {
+  directives: { permission },
   data() {
     return {
       formVisible: false,
@@ -15,16 +16,49 @@ export default {
         author: '',
         img: ''
       },
+
       listQuery: {
         page: 1,
         limit: 20,
         title: undefined,
-        author: undefined
+        author: undefined,
+        startDate: undefined,
+        endDate: undefined
       },
+      rangeDate:undefined,
       total: 0,
       list: null,
       listLoading: true,
-      selRow: {}
+      selRow: {},
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+            picker.$emit('pick', [start, end]);
+          }
+        }, {
+          text: '最近一个月',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+            picker.$emit('pick', [start, end]);
+          }
+        }, {
+          text: '最近三个月',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+            picker.$emit('pick', [start, end]);
+          }
+        }
+        ]
+      }
+
     }
   },
   computed: {
@@ -48,7 +82,13 @@ export default {
     },
     fetchData() {
       this.listLoading = true
-      getList(this.listQuery).then(response => {
+      let queryData = this.listQuery
+      if(this.rangeDate){
+        queryData['startDate'] = this.rangeDate[0]
+        queryData['endDate'] = this.rangeDate[1]
+
+      }
+      getList(queryData).then(response => {
         this.list = response.data.records
         for (var index in this.list) {
           const item = this.list[index]
@@ -59,11 +99,16 @@ export default {
       })
     },
     search() {
+      this.listQuery.page = 1
       this.fetchData()
     },
     reset() {
-      this.listQuery.title = ''
-      this.listQuery.author = ''
+      this.listQuery.title = undefined
+      this.listQuery.author = undefined
+      this.listQuery.startDate = undefined
+      this.listQuery.endDate = undefined
+      this.rangeDate = ''
+      this.listQuery.page = 1
       this.fetchData()
     },
     handleFilter() {
@@ -93,7 +138,7 @@ export default {
       this.selRow = currentRow
     },
     add() {
-      this.$router.push({ path: '/cms/article/edit' })
+      this.$router.push({ path: '/cms/articleEdit' })
     },
     checkSel() {
       if (this.selRow && this.selRow.id) {
@@ -105,10 +150,18 @@ export default {
       })
       return false
     },
+    editItem(record){
+      this.selRow = record
+      this.edit()
+    },
     edit() {
       if (this.checkSel()) {
-        this.$router.push({ path: '/cms/article/edit', query: { id: this.selRow.id }})
+        this.$router.push({ path: '/cms/articleEdit', query: { id: this.selRow.id }})
       }
+    },
+    removeItem(record){
+      this.selRow = record
+      this.remove()
     },
     remove() {
       if (this.checkSel()) {

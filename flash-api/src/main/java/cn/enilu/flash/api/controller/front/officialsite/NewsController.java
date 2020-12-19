@@ -5,8 +5,8 @@ import cn.enilu.flash.bean.entity.cms.Article;
 import cn.enilu.flash.bean.enumeration.cms.BannerTypeEnum;
 import cn.enilu.flash.bean.enumeration.cms.ChannelEnum;
 import cn.enilu.flash.bean.vo.front.Rets;
-import cn.enilu.flash.bean.vo.offcialSite.Banner;
-import cn.enilu.flash.bean.vo.offcialSite.News;
+import cn.enilu.flash.bean.vo.offcialsite.BannerVo;
+import cn.enilu.flash.bean.vo.offcialsite.News;
 import cn.enilu.flash.service.cms.ArticleService;
 import cn.enilu.flash.service.cms.BannerService;
 import cn.enilu.flash.utils.factory.Page;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/offcialSite/news")
+@RequestMapping("/offcialsite/news")
 public class NewsController extends BaseController {
     @Autowired
     private BannerService bannerService;
@@ -30,8 +30,8 @@ public class NewsController extends BaseController {
 
     @RequestMapping(method = RequestMethod.GET)
     public Object list() {
-        Map<String, Object> dataMap = new HashMap<>();
-        Banner banner = bannerService.queryBanner(BannerTypeEnum.NEWS.getValue());
+        Map<String, Object> dataMap = new HashMap<>(10);
+        BannerVo banner = bannerService.queryBanner(BannerTypeEnum.NEWS.getValue());
         dataMap.put("banner", banner);
 
         List<News> newsList = new ArrayList<>();
@@ -47,7 +47,7 @@ public class NewsController extends BaseController {
 
         dataMap.put("list", newsList);
 
-        Map map = new HashMap();
+        Map map = new HashMap(2);
 
         map.put("data", dataMap);
         return Rets.success(map);

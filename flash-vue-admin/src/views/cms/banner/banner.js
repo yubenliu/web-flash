@@ -2,8 +2,10 @@ import { remove, getList, save } from '@/api/cms/banner'
 import { getToken } from '@/utils/auth'
 import { Loading } from 'element-ui'
 import { getApiUrl } from '@/utils/utils'
+import permission from '@/directive/permission/index.js'
 
 export default {
+  directives: { permission },
   data() {
     return {
       uploadUrl: '',
@@ -74,10 +76,12 @@ export default {
       })
     },
     search() {
+      this.listQuery.page = 1
       this.fetchData()
     },
     reset() {
       this.listQuery.title = ''
+      this.listQuery.page = 1
       this.fetchData()
     },
     handleFilter() {
@@ -132,6 +136,10 @@ export default {
         type: 'warning'
       })
       return false
+    },
+    removeItem(record){
+      this.selRow = record
+      this.remove()
     },
     remove() {
       if (this.checkSel()) {

@@ -3,19 +3,35 @@
     <div class="block">
       <el-row  :gutter="20">
         <el-col :span="6">
-          <el-input v-model="listQuery.title" placeholder="标题"></el-input>
+          <el-input v-model="listQuery.title" size="mini" placeholder="标题"></el-input>
         </el-col>
         <el-col :span="6">
-          <el-button type="success" icon="el-icon-search" @click.native="search">{{ $t('button.search') }}</el-button>
-          <el-button type="primary" icon="el-icon-refresh" @click.native="reset">{{ $t('button.reset') }}</el-button>
+          <el-input v-model="listQuery.author" size="mini" placeholder="作者"></el-input>
+        </el-col>
+        <el-col :span="8">
+          <el-date-picker
+            v-model="rangeDate"
+            size="mini"
+            type="datetimerange"
+            :picker-options="pickerOptions"
+            range-separator="至"
+            start-placeholder="发布起始日期"
+            end-placeholder="发布截至日期"
+            value-format="yyyyMMddHHmmss"
+            align="right">
+          </el-date-picker>
+        </el-col>
+        <el-col :span="4">
+          <el-button type="success" size="mini" icon="el-icon-search" @click.native="search">{{ $t('button.search') }}</el-button>
+          <el-button type="primary" size="mini" icon="el-icon-refresh" @click.native="reset">{{ $t('button.reset') }}</el-button>
         </el-col>
       </el-row>
       <br>
       <el-row>
         <el-col :span="24">
-          <el-button type="success" icon="el-icon-plus" @click.native="add">{{ $t('button.add') }}</el-button>
-          <el-button type="primary" icon="el-icon-edit" @click.native="edit">{{ $t('button.edit') }}</el-button>
-          <el-button type="danger" icon="el-icon-delete" @click.native="remove">{{ $t('button.delete') }}</el-button>
+          <el-button type="success" size="mini" icon="el-icon-plus" @click.native="add" v-permission="['/cms/articleEdit']">{{ $t('button.add') }}</el-button>
+          <el-button type="primary" size="mini"  icon="el-icon-edit" @click.native="edit" v-permission="['/cms/articleEdit']">{{ $t('button.edit') }}</el-button>
+          <el-button type="danger" size="mini"  icon="el-icon-delete" @click.native="remove" v-permission="['/article/remove']">{{ $t('button.delete') }}</el-button>
         </el-col>
       </el-row>
     </div>
@@ -46,9 +62,17 @@
       </el-table-column>
       <el-table-column label="文章配图">
         <template slot-scope="scope">
-          <img :src="scope.row.img" style="width:200px;">
+          <img :src="scope.row.img" style="width:80px;">
         </template>
       </el-table-column>
+
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button type="text" size="mini" icon="el-icon-edit" @click.native="editItem(scope.row)" v-permission="['/cms/articleEdit']">{{ $t('button.edit') }}</el-button>
+          <el-button type="text" size="mini" icon="el-icon-delete" @click.native="removeItem(scope.row)" v-permission="['/article/remove']">{{ $t('button.delete') }}</el-button>
+        </template>
+      </el-table-column>
+
 
     </el-table>
 
@@ -58,6 +82,7 @@
       :page-sizes="[10, 20, 50, 100,500]"
       :page-size="listQuery.limit"
       :total="total"
+      :current-page.sync="listQuery.page"
       @size-change="changeSize"
       @current-change="fetchPage"
       @prev-click="fetchPrev"

@@ -3,10 +3,19 @@ module.exports = {
     description: '使用web-flash快速构建web应用程序',
     base: '/web-flash/',
     head: [
-        ['link', { rel: 'shortcut icon', type: "image/x-icon", href: './favicon.ico' }]
+        ['link', {rel: 'shortcut icon', type: "image/x-icon", href: './favicon.ico'}],
+        ['script', {}, `
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?2e49fcf058af23545d0f4f943a872044";
+          var s = document.getElementsByTagName("script")[0]; 
+          s.parentNode.insertBefore(hm, s);
+        })();
+        `]
     ],
     evergreen: true,
-    editLinkText:'在 GitHub 上编辑此页',
+    editLinkText: '在 GitHub 上编辑此页',
     port: 8081,
     ga: 'UA-71886989-13',
     themeConfig: {
@@ -15,80 +24,96 @@ module.exports = {
         editLinks: true,
         editLinkText: '编辑此页面！',
         nav: [
-            {text: '文档', link: '/'},
-            {text: '功能',
+            {text: '指南', link: '/guide/base/preface'},
+            {text: '生态系统',
                 items:[
-                    {text: '导出excel',link:'/feature/exportExcel'},
-                    {text: '定时任务',link:'/action/task'},
-                    {text: '缓存',link:'/action/cache'},
-                    {text: '审计功能',link:'/action/jpaauditing'},
-                ]
-            },
-            {text: '周边',
-                items:[
-                    {text: '代码生成',link:'/ecosystem/code-generator'},
-                    {text: '数据库文档生成',link:'/ecosystem/database-doc-generator'},
-                ]
-            },
-            {text: '捐赠',link:'/donate'},
-            {text: '资源',link:'/resource'},
+                    {text:"项目",items:[
+                            {text:'code-generator',link:'/ecosystem/code-generator.html'},
+                            {text:'IDEA code plugin',link:'https://gitee.com/enilu/webflash-generator'},
+                            {text:'database-doc-generator',link:'/ecosystem/database-doc-generator.html'},
+                            {text:'material-admin(单体版本)',link:'https://enilu.gitee.io/material-admin'}
+                        ]
+                    },
+                    {text:'帮助',items:[
+                            {text: '在线资源',link:'/guide/other/resource'},
+                            {text:'问答社区',link:'/guide/other/xiaomiquan'},
+                            {text:'QQ群(752844606)',link:'https://jq.qq.com/?_wv=1027&k=qWkkox36'},
+                            {text:'作者blog',link:'http://blog.enilu.cn'},
+                            {text:'FAQ',link:'/guide/other/faq'},
+                            {text:'Change Log',link:'/guide/other/changeLog'}
+                        ]},
 
-            {text: '项目主页', link: 'https://github.com/enilu/web-flash'},
+                ]
+            },
+            {text: '博客', link: '/blog/dictSelect'},
+            {text: '捐赠', link: '/donate'},
+            {text: 'Gitee', link: 'https://gitee.com/enilu/web-flash'},
 
 
         ],
-        sidebar: [
-            {
-                title: '基本准备',
-                collapsable: false,
-                children: [
-                    '/base/jdkAndMaven',
-                    '/base/modules'
-                ]
-            },
-            {
-                title: '20分钟将本项目跑起来',
-                collapsable: false,
-                children: [
-                    '/quickstart/quickstart',
-                    '/quickstart/clone',
-                    '/quickstart/initDb',
-                    '/quickstart/config',
-                    '/quickstart/startup'
-                ]
-            },
-            {
-                title: '基本功能介绍',
-                collapsable: false,
-                children: [
-                    '/feature/modules',
-                    '/feature/menu',
-                    '/feature/dict',
-                    '/feature/log',
-                    '/feature/permissionMgrVue',
-                    '/feature/monitor',
-                    '/feature/sysConfig',
-                    '/feature/fileMgr',
-                    '/feature/messageCenter'
-                ]
-            },{
-                title: '进阶',
-                collapsable: false,
-                children: [
-                    '/action/i18n',
-                    '/action/cache',
-                    '/action/task',
-                    '/action/jpaauditing.md'
+        sidebar: {
+            '/guide': [
+                {
+                    title: '准备工作',
+                    collapsable: false,
+                    children: [
+                        '/guide/base/preface',
+                        '/guide/base/jdkAndMaven',
+                        '/guide/base/modules'
+                    ]
+                },
+                {
+                    title: '快速开始',
+                    collapsable: false,
+                    children: [
+                        '/guide/quickstart/quickstart',
+                        '/guide/quickstart/clone',
+                        '/guide/quickstart/initDb',
+                        '/guide/quickstart/config',
+                        '/guide/quickstart/startup'
+                    ]
+                },
+                {
+                    title: '基础',
+                    collapsable: false,
+                    children: [
+                        '/guide/feature/modules',
+                        '/guide/feature/menu',
+                        '/guide/feature/dict',
+                        '/guide/feature/log',
+                        '/guide/feature/permissionMgrVue',
+                        '/guide/feature/monitor',
+                        '/guide/feature/sysConfig',
+                        '/guide/feature/fileMgr',
+                        '/guide/feature/exportExcel',
+                        '/guide/feature/messageCenter',
+                        '/guide/feature/cms.md'
 
+                    ]
+                },
+                {
+                    title: '进阶',
+                    collapsable: false,
+                    children: [
+                        '/guide/action/i18n',
+                        '/guide/action/cache',
+                        '/guide/action/task',
+                        '/guide/action/jpaauditing.md',
+                        '/guide/action/validator',
+                        '/guide/action/deploy'
+                    ]
+                }
+            ],
+            '/blog': [
+                {
+                    title: '博客',
+                    collapsable: false,
+                    children: [
+                        '/blog/dictSelect'
+                    ]
+                }
                 ]
-            },{
-                title: '其他',
-                collapsable: false,
-                children:[
-                    '/other/faq'
-                ]
-            }
-        ]
+        }
 
     }
 }

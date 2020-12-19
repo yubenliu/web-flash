@@ -1,6 +1,8 @@
 import { remove, getList, save } from '@/api/cms/channel'
+import permission from '@/directive/permission/index.js'
 
 export default {
+  directives: { permission },
   data() {
     return {
       formVisible: false,
@@ -46,9 +48,11 @@ export default {
       })
     },
     search() {
+      this.listQuery.page = 1
       this.fetchData()
     },
     reset() {
+      this.listQuery.page = 1
       this.fetchData()
     },
     handleFilter() {
@@ -66,7 +70,7 @@ export default {
     },
     add() {
       this.resetForm()
-      this.formTitle = '添加蓝马'
+      this.formTitle = '添加栏目'
       this.formVisible = true
       this.isAdd = true
     },
@@ -100,6 +104,10 @@ export default {
       })
       return false
     },
+    editItem(record){
+      this.selRow = record
+      this.edit()
+    },
     edit() {
       if (this.checkSel()) {
         this.isAdd = false
@@ -107,6 +115,10 @@ export default {
         this.formTitle = '编辑栏目'
         this.formVisible = true
       }
+    },
+    removeItem(record){
+      this.selRow = record
+      this.remove()
     },
     remove() {
       if (this.checkSel()) {

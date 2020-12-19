@@ -14,15 +14,15 @@ import javax.persistence.Id;
  * @author enilu
  */
 @Entity(name = "t_sys_relation")
-@Table(appliesTo = "t_sys_relation",comment = "菜单角色关系")
+@Table(appliesTo = "t_sys_relation", comment = "菜单角色关系")
 @Data
 public class Relation {
     @Id
     @GeneratedValue
     private Long id;
-    @Column
+    @Column(columnDefinition = "BIGINT COMMENT '菜单id'")
     private Long menuid;
-    @Column
+    @Column(columnDefinition = "BIGINT COMMENT '角色id'")
     private Long roleid;
 
 }

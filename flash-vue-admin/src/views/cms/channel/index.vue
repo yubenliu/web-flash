@@ -1,13 +1,14 @@
 <template>
   <div class="app-container">
+    <div class="block">
       <el-row>
         <el-col :span="24">
-          <el-button type="success" icon="el-icon-plus" @click.native="add">{{ $t('button.add') }}</el-button>
-          <el-button type="primary" icon="el-icon-edit" @click.native="edit">{{ $t('button.edit') }}</el-button>
-          <el-button type="danger" icon="el-icon-delete" @click.native="remove">{{ $t('button.delete') }}</el-button>
+          <el-button type="success" size="mini" icon="el-icon-plus" @click.native="add" v-permission="['/channel/edit']">{{ $t('button.add') }}</el-button>
+          <el-button type="primary" size="mini" icon="el-icon-edit" @click.native="edit" v-permission="['/channel/edit']">{{ $t('button.edit') }}</el-button>
+          <el-button type="danger" size="mini" icon="el-icon-delete" @click.native="remove" v-permission="['/channel/remove']">{{ $t('button.delete') }}</el-button>
         </el-col>
       </el-row>
-
+    </div>
     <el-table :data="list" v-loading="listLoading" element-loading-text="Loading" border fit highlight-current-row
               @current-change="handleCurrentChange">
 
@@ -26,13 +27,22 @@
           {{scope.row.code}}
         </template>
       </el-table-column>
+
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button type="text" size="mini" icon="el-icon-edit" @click.native="editItem(scope.row)" v-permission="['/channel/edit']">{{ $t('button.edit') }}</el-button>
+          <el-button type="text" size="mini" icon="el-icon-delete" @click.native="removeItem(scope.row)" v-permission="['/channel/remove']">{{ $t('button.delete') }}</el-button>
+        </template>
+      </el-table-column>
+
+
     </el-table>
 
     <el-dialog
       :title="formTitle"
       :visible.sync="formVisible"
       width="70%">
-      <el-form ref="form" :model="form" :rules="rules" label-width="150px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
           <el-col :span="12">
             <el-form-item label="名称" prop="name">

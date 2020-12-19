@@ -4,7 +4,8 @@ import cn.enilu.flash.bean.entity.system.Task;
 import cn.enilu.flash.bean.entity.system.TaskLog;
 import cn.enilu.flash.bean.vo.QuartzJob;
 import cn.enilu.flash.dao.system.TaskLogRepository;
-import cn.enilu.flash.utils.StringUtils;
+import cn.enilu.flash.dao.system.TaskRepository;
+import cn.enilu.flash.utils.StringUtil;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,8 @@ public abstract class JobExecuter {
 
     @Autowired
     private TaskLogRepository taskLogRepository;
+    @Autowired
+    private TaskRepository taskRepository;
 
     private QuartzJob job;
 
@@ -58,12 +61,11 @@ public abstract class JobExecuter {
         task.setExecResult(exeResult);
         task.setExecAt(exeAt);
         taskLogRepository.save(taskLog);
-        taskService.simpleUpdate(task);
+        taskRepository.save(task);
         log.info(">>>>>>>>>>>>>>>>>执行定时任务[" + taskName + "]结束<<<<<<<<<<<<<<<<<<<");
     }
 
     /**
-     *
      * @param dataMap 数据库配置的参数
      */
     public abstract void execute(Map<String, Object> dataMap) throws Exception;
@@ -76,9 +78,9 @@ public abstract class JobExecuter {
         Map<String, Object> dataMap = job.getDataMap();
         String toEmail = null;
         if (dataMap != null && dataMap.containsKey("email")) {
-            toEmail = StringUtils.sNull(dataMap.get("email"));
+            toEmail = StringUtil.sNull(dataMap.get("email"));
         }
-        if (StringUtils.isEmpty(toEmail)) {
+        if (StringUtil.isEmpty(toEmail)) {
             toEmail = defaultEmail;
         }
         return toEmail;

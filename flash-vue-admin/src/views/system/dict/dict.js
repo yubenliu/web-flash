@@ -1,6 +1,8 @@
 import { remove, getList, save, update } from '@/api/system/dict'
+import permission from '@/directive/permission/index.js'
 
 export default {
+  directives: { permission },
   data() {
     return {
       formVisible: false,
@@ -57,10 +59,12 @@ export default {
       })
     },
     search() {
+      this.listQuery.page = 1
       this.fetchData()
     },
     reset() {
       this.listQuery.name = ''
+      this.listQuery.page = 1
       this.fetchData()
     },
     handleFilter() {
@@ -133,6 +137,10 @@ export default {
       })
       return false
     },
+    editItem(record){
+      this.selRow = record
+      this.edit()
+    },
     edit() {
       if (this.checkSel()) {
         this.isAdd = false
@@ -146,6 +154,10 @@ export default {
         this.form = { name: this.selRow.name, id: this.selRow.id, details: details, detail: this.selRow.detail }
         this.formVisible = true
       }
+    },
+    removeItem(record){
+      this.selRow = record
+      this.remove()
     },
     remove() {
       if (this.checkSel()) {

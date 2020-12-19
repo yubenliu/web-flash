@@ -2,21 +2,24 @@
   <div class="app-container">
     <div class="block">
       <el-row :gutter="20">
-        <el-col :span="6">
-          <el-input v-model="listQuery.name" placeholder="请输入角色名称"></el-input>
+        <el-col :span="4">
+          <el-input v-model="listQuery.name" size="mini" placeholder="请输入角色名称"></el-input>
+        </el-col>
+        <el-col :span="4">
+          <el-input v-model="listQuery.tips" size="mini" placeholder="请输入角色编号"></el-input>
         </el-col>
         <el-col :span="6">
-          <el-button type="success" icon="el-icon-search" @click.native="search">{{ $t('button.search') }}</el-button>
-          <el-button type="primary" icon="el-icon-refresh" @click.native="reset">{{ $t('button.reset') }}</el-button>
+          <el-button type="success" size="mini" icon="el-icon-search" @click.native="search">{{ $t('button.search') }}</el-button>
+          <el-button type="primary" size="mini" icon="el-icon-refresh" @click.native="reset">{{ $t('button.reset') }}</el-button>
         </el-col>
       </el-row>
       <br>
       <el-row>
         <el-col :span="24">
-          <el-button type="success" icon="el-icon-plus" @click.native="add">{{ $t('button.add') }}</el-button>
-          <el-button type="primary" icon="el-icon-edit" @click.native="edit">{{ $t('button.edit') }}</el-button>
-          <el-button type="danger" icon="el-icon-delete" @click.native="remove">{{ $t('button.delete') }}</el-button>
-          <el-button type="primary" icon="el-icon-setting" @click.native="openPermissions">权限配置</el-button>
+          <el-button type="success" size="mini" icon="el-icon-plus" @click.native="add" v-permission="['/role/add']">{{ $t('button.add') }}</el-button>
+          <el-button type="primary" size="mini" icon="el-icon-edit" @click.native="edit" v-permission="['/role/edit']">{{ $t('button.edit') }}</el-button>
+          <el-button type="danger" size="mini" icon="el-icon-delete" @click.native="remove" v-permission="['/role/remove']">{{ $t('button.delete') }}</el-button>
+          <el-button type="primary" size="mini" icon="el-icon-setting" @click.native="openPermissions" v-permission="['/role/setAuthority']">权限配置</el-button>
         </el-col>
       </el-row>
     </div>
@@ -45,6 +48,13 @@
           {{scope.row.pName}}
         </template>
       </el-table-column>
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button type="text" size="mini" icon="el-icon-edit" @click.native="editItem(scope.row)" v-permission="['/role/edit']">{{ $t('button.edit') }}</el-button>
+          <el-button type="text" size="mini" icon="el-icon-delete" @click.native="removeItem(scope.row)" v-permission="['/role/remove']">{{ $t('button.delete') }}</el-button>
+          <el-button type="text" size="mini" icon="el-icon-setting" @click.native="openPermissionsItem(scope.row)" v-permission="['/role/setAuthority']">权限配置</el-button>
+        </template>
+      </el-table-column>
 
     </el-table>
 
@@ -55,6 +65,7 @@
       :page-sizes="[10, 20, 50, 100,500]"
       :page-size="listQuery.limit"
       :total="total"
+      :current-page.sync="listQuery.page"
       @size-change="changeSize"
       @current-change="fetchPage"
       @prev-click="fetchPrev"
@@ -80,20 +91,7 @@
 
           <el-col :span="12">
             <el-form-item label="上级角色">
-              <el-input
-                placeholder="请选择上级角色"
-                v-model="form.pName"
-                readonly="readonly"
-                @click.native="roleTree.show = !roleTree.show">
-              </el-input>
-              <el-tree v-if="roleTree.show"
-                       empty-text="暂无数据"
-                       :expand-on-click-node="false"
-                       :data="list"
-                       :props="roleTree.defaultProps"
-                       @node-click="handleRoleNodeClick"
-                       class="input-tree">
-              </el-tree>
+              <treeselect v-model="form.pid"  :options="roleTree.data"  placeholder="请选择上级角色"/>
 
             </el-form-item>
           </el-col>
@@ -105,21 +103,7 @@
 
           <el-col :span="12">
             <el-form-item label="所在部门">
-              <el-input
-                placeholder="请选择所在部门"
-                v-model="form.deptName"
-                readonly="readonly"
-                @click.native="deptTree.show = !deptTree.show">
-              </el-input>
-              <el-tree v-if="deptTree.show"
-                       empty-text="暂无数据"
-                       :expand-on-click-node="false"
-                       :data="deptList"
-                       :props="deptTree.defaultProps"
-                       @node-click="handleDeptNodeClick"
-                       class="input-tree">
-              </el-tree>
-
+              <treeselect v-model="form.deptid"  :options="deptTree.data"  placeholder="请选择所属部门"/>
             </el-form-item>
           </el-col>
 

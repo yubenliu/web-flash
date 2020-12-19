@@ -69,12 +69,6 @@
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache-core</artifactId>
         </dependency>
-
-        <!-- utils start-->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-        </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -117,15 +111,25 @@
         <dependency>
             <groupId>com.github.qcloudsms</groupId>
             <artifactId>qcloudsms</artifactId>
-            <version>1.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-core</artifactId>
         </dependency>
         <!-- message end-->
-
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+        </dependency>
         <!--代码生成-->
         <dependency>
             <groupId>cn.enilu</groupId>
-            <artifactId>sbvue-coder</artifactId>
-            <version>1.1</version>
+            <artifactId>flash-generator</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>

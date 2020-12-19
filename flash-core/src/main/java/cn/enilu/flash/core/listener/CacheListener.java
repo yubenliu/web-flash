@@ -1,7 +1,7 @@
 package cn.enilu.flash.core.listener;
 
-import cn.enilu.flash.dao.cache.ConfigCache;
-import cn.enilu.flash.dao.cache.DictCache;
+import cn.enilu.flash.cache.ConfigCache;
+import cn.enilu.flash.cache.DictCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +9,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 /**
- *系统监听器<br>
- *系统启动时加载全局参数(t_sys_cfg标中的数据)到缓存中
- * @version 2018-12-23
+ * 系统监听器<br>
+ * 系统启动时加载全局参数(t_sys_cfg标中的数据)到缓存中
  *
- * @author  enilu
+ * @author enilu
+ * @version 2018-12-23
  */
 @Component
 public class CacheListener implements CommandLineRunner {

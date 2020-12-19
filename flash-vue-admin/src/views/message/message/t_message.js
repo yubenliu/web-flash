@@ -1,6 +1,8 @@
 import { clear, getList, save } from '@/api/message/message'
+import permission from '@/directive/permission/index.js'
 
 export default {
+  directives: { permission },
   data() {
     return {
       formVisible: false,
@@ -16,8 +18,10 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        id: undefined
+        id: undefined,
+        tplCode:undefined
       },
+      rangeDate: undefined,
       total: 0,
       list: null,
       listLoading: true,
@@ -39,15 +43,34 @@ export default {
   },
   methods: {
     init() {
+      const type =  this.$route.query.type
       this.fetchData()
     },
     fetchData() {
       this.listLoading = true
-      getList(this.listQuery).then(response => {
+      let queryData = this.listQuery
+      if(this.rangeDate){
+        queryData['startDate'] = this.rangeDate[0]
+        queryData['endDate'] = this.rangeDate[1]
+
+      }
+      getList(queryData).then(response => {
         this.list = response.data.records
         this.listLoading = false
         this.total = response.data.total
       })
+    },
+    search() {
+      this.listQuery.page = 1
+      this.fetchData()
+    },
+    reset() {
+      this.listQuery.startDate = undefined
+      this.listQuery.endDate = undefined
+      this.rangeDate = ''
+      this.tplCode = ''
+      this.listQuery.page = 1
+      this.fetchData()
     },
     handleFilter() {
       this.listQuery.page = 1

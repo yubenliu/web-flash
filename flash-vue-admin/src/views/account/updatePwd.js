@@ -1,4 +1,4 @@
-import { updatePwd } from '@/api/login'
+import { updatePwd } from '@/api/user'
 
 export default {
   data() {
@@ -7,7 +7,9 @@ export default {
         oldPassword: '',
         password: '',
         rePassword: ''
-      }
+      },
+      activeName: 'updatePwd',
+      user: {}
     }
   },
 
@@ -21,7 +23,16 @@ export default {
       }
     }
   },
+  mounted() {
+    this.init()
+  },
   methods: {
+    init(){
+      this.user = this.$store.state.user.profile
+    },
+    handleClick(tab, event){
+      this.$router.push({ path: '/account/'+tab.name})
+    },
     updatePwd() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
@@ -30,19 +41,18 @@ export default {
             password: this.form.password,
             rePassword: this.form.rePassword
           }).then(response => {
-            console.log(response)
             this.$message({
               message: '密码修改成功',
               type: 'success'
             })
-            this.$store.dispatch('LogOut').then(() => {
-              location.reload() // 为了重新实例化vue-router对象 避免bug
-            })
+            //退出登录，该操作是个异步操作，所以后面跳转到登录页面延迟1s再执行（如果有更好的方法再调整）
+            this.$store.dispatch('user/logout')
+            const self = this
+            setTimeout(function(){
+              self.$router.push(`/login`)
+            },1000)
+
           }).catch((err) => {
-            this.$message({
-              message: err,
-              type: 'error'
-            })
           })
         } else {
           return false

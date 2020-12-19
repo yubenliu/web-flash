@@ -12,6 +12,7 @@
         :on-success="handleSuccess"
         :before-upload="beforeUpload"
         class="editor-slide-upload"
+        :headers="uploadHeaders"
         :action="fileUrl"
         list-type="picture-card">
         <el-button size="small" type="primary">点击上传</el-button>
@@ -24,7 +25,7 @@
 
 <script>
   import { getApiUrl } from '@/utils/utils'
-
+  import { getToken } from '@/utils/auth'
   export default {
     name: 'EditorSlideUpload',
     props: {
@@ -38,11 +39,15 @@
         dialogVisible: false,
         listObj: {},
         fileList: [],
-        fileUrl: ''
+        fileUrl: '',
+        uploadHeaders: {
+          'Authorization': ''
+        },
       }
     },
     created() {
       this.fileUrl = getApiUrl() + '/file'
+      this.uploadHeaders['Authorization'] = getToken()
     },
     methods: {
       checkAllSuccess() {
@@ -102,7 +107,7 @@
   .editor-slide-upload {
     margin-bottom: 20px;
 
-    /deep/ .el-upload--picture-card {
+    ::v-deep .el-upload--picture-card {
       width: 100%;
     }
   }

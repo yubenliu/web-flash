@@ -1,17 +1,30 @@
 package cn.enilu.flash.service.task;
 
 import cn.enilu.flash.bean.entity.system.Task;
-import cn.enilu.flash.bean.exception.GunsException;
-import cn.enilu.flash.bean.exception.GunsExceptionEnum;
+import cn.enilu.flash.bean.exception.ApplicationException;
+import cn.enilu.flash.bean.exception.ApplicationExceptionEnum;
 import cn.enilu.flash.bean.vo.QuartzJob;
-import com.alibaba.fastjson.JSON;
+import cn.enilu.flash.bean.vo.query.SearchFilter;
+import cn.enilu.flash.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.quartz.*;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.CronTrigger;
+import org.quartz.Job;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
+import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,6 +35,8 @@ public class JobService {
     private static final Logger logger = LoggerFactory.getLogger(JobService.class);
     @Autowired
     private Scheduler scheduler;
+    @Autowired
+    private TaskService taskService;
 
     /**
      * 获取单个任务
@@ -55,6 +70,14 @@ public class JobService {
     }
 
 
+    public List<QuartzJob> getTaskList() {
+        List<Task> tasks = taskService.queryAll(SearchFilter.build("disabled", SearchFilter.Operator.EQ, false));
+        List<QuartzJob> jobs = new ArrayList<>();
+        for (Task task : tasks) {
+            jobs.add(getJob(task));
+        }
+        return jobs;
+    }
 
     public QuartzJob getJob(Task task) {
         QuartzJob job = null;
@@ -69,10 +92,10 @@ public class JobService {
             job.setDisabled(task.isDisabled());
             if (StringUtils.isNotBlank(task.getData())) {
                 try {
-                    Map<String, Object> dataMap = JSON.parseObject( task.getData(),Map.class);
+                    Map<String, Object> dataMap = JsonUtil.fromJson(Map.class, task.getData());
                     job.setDataMap(dataMap);
                 } catch (Exception e) {
-                    throw  new GunsException(GunsExceptionEnum.TASK_CONFIG_ERROR);
+                    throw new ApplicationException(ApplicationExceptionEnum.TASK_CONFIG_ERROR);
                 }
             }
         }
@@ -124,9 +147,9 @@ public class JobService {
      * 删除任务
      */
 
-    public boolean deleteJob(QuartzJob job) {
-        logger.info("删除任务：{}", job.getJobName());
-        JobKey jobKey = JobKey.jobKey(job.getJobName(), job.getJobGroup());
+    public boolean deleteJob(QuartzJob record) {
+        logger.info("删除任务：{}", record.getJobName());
+        JobKey jobKey = JobKey.jobKey(record.getJobName(), record.getJobGroup());
         try {
             scheduler.deleteJob(jobKey);
             return true;

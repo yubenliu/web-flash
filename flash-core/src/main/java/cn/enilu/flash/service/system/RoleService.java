@@ -7,13 +7,13 @@ import cn.enilu.flash.bean.vo.node.Node;
 import cn.enilu.flash.bean.vo.node.ZTreeNode;
 import cn.enilu.flash.dao.system.RelationRepository;
 import cn.enilu.flash.dao.system.RoleRepository;
+import cn.enilu.flash.service.BaseService;
 import cn.enilu.flash.utils.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created  on 2018/3/25 0025.
@@ -21,7 +21,7 @@ import java.util.Optional;
  * @author enilu
  */
 @Service
-public class RoleService {
+public class RoleService extends BaseService<Role, Long, RoleRepository> {
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
@@ -95,11 +95,12 @@ public class RoleService {
         return nodes;
     }
 
+    @Override
     public Role get(Long id) {
-        Optional<Role> optional = roleRepository.findById(id);
-        if (optional.isPresent()) {
-            return optional.get();
-        }
-        return null;
+        return roleRepository.getOne(id);
+    }
+
+    public List<Role> findByName(String name) {
+        return roleRepository.findByName(name);
     }
 }
